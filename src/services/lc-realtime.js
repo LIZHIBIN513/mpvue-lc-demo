@@ -1,4 +1,9 @@
 import { Realtime } from 'leancloud-realtime';
+import strftime from 'strftime';
+
+function formatLastMessageAt(dt) {
+  return strftime('%Y-%m-%d', dt);
+}
 
 function getPeerId(clientId, conv) {
   let peerId = null;
@@ -26,6 +31,7 @@ class LCRTSession {
           system: conv.system,
           lastMessage: conv.lastMessage,
           lastMessageAt: conv._lastMessageAt,
+          lastMessageAtFormated: formatLastMessageAt(conv._lastMessageAt),
           peerId,
           peerAvatarUrl: '',
           peerNickname: '',

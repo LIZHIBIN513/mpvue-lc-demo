@@ -1,15 +1,14 @@
 <template>
-  <div>
-    <ul>
-      <li>convId: {{ conv.id }}</li>
-      <li>peerId: {{ conv.peerId}}</li>
-    </ul>
-    <input placeholder="text" v-model="message"/>
-    <button @click="send">Send</button>
-    <div v-for="(message, index) in messages" :key="index">
-      <span>*</span>
-      <span>{{ message.text }}</span>
-      <small>{{ message.timestamp }}</small>
+  <div class="container">
+    <div class="message-view">
+      <div v-for="(message, index) in messages" :key="index">
+        <div class="bubble">{{ message.text }}</div>
+        <div>{{ dummy() }}</div>
+      </div>
+    </div>
+    <div class="message-form">
+      <input placeholder="text" v-model="message"/>
+      <button @click="send">Send</button>
     </div>
   </div>
 </template>
@@ -56,6 +55,9 @@ export default {
     Vue.prototype.$bus.$off('LCRT_MESSAGE', this.onMessageReceived);
   },
   methods: {
+    dummy() {
+      return 'Hello';
+    },
     onMessageReceived(message, conv) {
       console.log('<conv>', message, conv);
       if (conv.id !== this.convId) {
@@ -66,13 +68,31 @@ export default {
       console.log(this.messages);
     },
     send() {
+      if (!this.message) {
+        wx.showToast({ title: '不能发送空消息', icon: 'none' });
+        return;
+      }
       manager.session.getConv(this.convId).then((conv) => {
-        console.log('message sending', this.message);
-        return conv.send(new TextMessage(this.message));
+        const message = new TextMessage(this.message);
+        console.log('message sending', this.message, message);
+        return conv.send(message);
       }).then((message) => {
         console.log('message sent', message);
+        this.messages.push(message);
       });
     }, // ~ send
   },
 };
 </script>
+
+<style lang="stylus" scoped>
+@import '../../../assets/stylus/index';
+.container
+  margin: 0
+  padding: 0
+.message-view
+  background-color: rgba(255,0,0,0.5)
+  width: 100%
+  height: 100%
+  overflow-y: scroll
+</style>

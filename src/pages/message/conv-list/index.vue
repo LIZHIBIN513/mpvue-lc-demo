@@ -1,8 +1,12 @@
 <template>
-  <div class="container">
-    <div v-for="(conv,index) in convs" :key="index">
-      <div><img class="userinfo-avatar" :src="conv.peerAvatarUrl"></div>
-      <div @click="openConv(conv.id)">{{conv.peerNickname}}</div>
+  <div>
+    <div class="conv" v-for="(conv,index) in convs" :key="index">
+      <div class="avatar-wrapper">
+        <img class="avatar" :src="conv.peerAvatarUrl">
+      </div>
+      <div class="nickname" @click="openConv(conv.id)">{{conv.peerNickname}}</div>
+      <div class="last-message"></div>
+      <div class="last-message-at">{{ conv.lastMessageAtFormated }}</div>
     </div>
   </div>
 </template>
@@ -13,7 +17,6 @@ import Vue from 'vue';
 import { getUserIconCached } from '@/services/huafer-api';
 import { manager } from '@/services/lc-realtime';
 import { Event } from 'leancloud-realtime';
-
 
 export default {
   data() {
@@ -27,10 +30,6 @@ export default {
   components: {},
 
   methods: {
-    bindViewTap() {
-      const url = '../logs/main';
-      wx.navigateTo({ url });
-    },
     openConv(convId) {
       wx.navigateTo({
         url: `/pages/message/conv/main?convId=${convId}`,
@@ -50,6 +49,7 @@ export default {
         this.convs = convs;
         for (let i = 0; i <= this.convs.length; i += 1) {
           const conv = this.convs[i];
+          console.log(conv);
           getUserIconCached(conv.peerId).then((rsp) => {
             if (rsp.status === 200 && rsp.data.code === 200) {
               // console.log(rsp.data.obj.userInfo);
@@ -64,11 +64,36 @@ export default {
 };
 </script>
 
-<style scoped>
-.userinfo-avatar {
-  width: 128rpx;
-  height: 128rpx;
-  margin: 20rpx;
-  border-radius: 50%;
-}
+<style lang="stylus" scoped>
+@import '../../../assets/stylus/index';
+.conv
+  position relative
+  width: 100%
+  height: rpx(170)
+  border-bottom: 1px solid #e2e2e2
+  margin: 0
+  padding: 0
+  clear both
+.avatar
+  width: rpx(110)
+  height: rpx(110)
+  border-radius: 50%
+.avatar-wrapper
+  float: left;
+  margin: rpx(30) rpx(30) auto rpx(34)
+.nickname
+  float: left
+  font-size: rpx(30)
+  margin: rpx(40) rpx(0) rpx(0) rpx(0)
+.last-message
+  float: left
+  font-size: rpx(28)
+  background-color: rgba(0,0,0, 0.5)
+.last-message-at
+  position: absolute
+  color: #888
+  font-size: rpx(24)
+  top: 50%
+  right: rpx(24)
+
 </style>
