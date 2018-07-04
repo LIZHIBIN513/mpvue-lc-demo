@@ -21,6 +21,11 @@ export default {
   padding: 200rpx 0;
   box-sizing: border-box;
 }
+page{
+  height: 100%;
+  background: #f7f9fb;
+  font-family: "PingFang SC"
+}
 /* this rule will be remove */
 * {
   transition: width 2s;
